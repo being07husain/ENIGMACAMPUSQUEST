@@ -1,0 +1,11 @@
+{
+  "name": "campusquest-3d-assets",
+  "private": true,
+  "description": "Pinned source for CampusQuest's locally served 3D campus renderer",
+  "scripts": {
+    "vendor:three": "node scripts/vendor-three.cjs"
+  },
+  "devDependencies": {
+    "three": "0.128.0"
+  }
+}

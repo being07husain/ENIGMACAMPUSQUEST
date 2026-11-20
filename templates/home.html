@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% set page = 'home' %}
+{% block content %}
+<section class="home-hero">
+  <div class="hero-copy">
+    <div class="eyebrow"><span class="live-pip"></span> THE CAMPUS IS YOURS TO DISCOVER</div>
+    <h1>Your campus.<br><span>Your <em>quest.</em></span></h1>
+    <p>Explore. Compete. Discover. Level up.</p>
+    <div class="hero-actions"><a href="{{ url_for('quests_page') }}" class="button button-primary">Start a quest <span>↗</span></a><a href="{{ url_for('content_page', page='map') }}" class="button button-quiet">Explore campus <span>⌖</span></a></div>
+    <div class="hero-season-tag"><span>✦</span> SEASON 01 <b>·</b> THE LOST CODE</div>
+  </div>
+  <div class="hero-visual" aria-label="CampusQuest level progress">
+    <div class="planet-ring ring-one"></div><div class="planet-ring ring-two"></div>
+    <div class="hero-planet"><span>✦</span><b>LVL<br>{{ player_stats.get('level', 1) }}</b></div>
+    <div class="orbit-chip orbit-xp"><small>EXPERIENCE</small><b>{{ player_stats.get('xp', 0) }} <i>XP</i></b></div>
+    <div class="orbit-chip orbit-streak"><span>◷</span><small>STREAK</small><b>{{ player_stats.get('current_streak', 0) }} days</b></div>
+    <div class="orbit-chip orbit-coins"><span>◈</span><b>{{ player_stats.get('coins', 0) }} coins</b></div>
+  </div>
+</section>
+<section class="progress-panel glass">
+  <div class="progress-title"><div><span class="eyebrow">PLAYER PROGRESSION</span><h2>Level {{ level.level }} <span>·</span> {{ level.total_xp }} total XP</h2></div><span class="progress-number">{{ level.current_xp }} <small>/ {{ level.needed_xp }} XP</small></span></div>
+  <div class="progress-track"><span style="width: {{ (100 * level.current_xp / level.needed_xp)|round|int }}%"></span></div>
+  <div class="progress-foot"><span>Keep exploring to reach the next level</span><a href="{{ url_for('content_page', page='profile') }}">View player profile ↗</a></div>
+</section>
+<div class="section-heading"><div><div class="eyebrow">A STORY UNFOLDING ON CAMPUS</div><h2>Season 01 <span class="gold-text">· The Lost Code</span></h2></div><a class="text-link" href="{{ url_for('content_page', page='season') }}">View season ↗</a></div>
+<section class="season-panel glass">
+  <div class="season-copy"><span class="season-emblem">✧</span><div><div class="eyebrow">FOUR FRAGMENTS. ONE CAMPUS MYSTERY.</div><h3>Something is hidden<br>in plain sight.</h3><p>A curious signal. Four fragments. The story starts with you.</p><a class="button button-outline" href="{{ url_for('content_page', page='season') }}">Continue season <span>→</span></a></div></div>
+  <div class="fragment-journey">{% set journey = namespace(current_set=false) %}{% for fragment in ['Library', 'IT Lab', 'Auditorium', 'Canteen'] %}{% set complete = fragment in season_completed %}{% set current = not complete and not journey.current_set %}{% if current %}{% set journey.current_set = true %}{% endif %}<div class="fragment-step {% if complete %}completed{% elif current %}current{% else %}locked{% endif %}"><span class="fragment-index">0{{ loop.index }}</span><i class="fragment-node">{% if complete %}✓{% elif current %}✦{% else %}·{% endif %}</i><b>{{ fragment|upper }}</b>{% if not loop.last %}<span class="fragment-line"></span>{% endif %}</div>{% endfor %}</div>
+</section>
+<div class="section-heading"><div><div class="eyebrow">PICK UP WHERE YOU LEFT OFF</div><h2>Featured quests</h2></div><a class="text-link" href="{{ url_for('quests_page') }}">All quests ↗</a></div>
+<section class="card-grid quest-preview-grid">{% for quest in quests %}<article class="quest-card glass">
+  <div class="quest-card-top"><span class="category-chip">{{ quest.category|upper }}</span><span class="difficulty">{{ quest.difficulty }}</span></div><h3>{{ quest.title }}</h3><p>{{ quest.description }}</p><div class="quest-card-meta"><span>⌖ {{ quest.location }}</span><span class="gold-text">✦ {{ quest.xp }} XP</span></div>
+  <a class="card-action" href="{{ url_for('quest_detail_page', quest_id=quest._id|string) }}">View quest <span>→</span></a>
+</article>{% endfor %}</section>
+<div class="dashboard-lower">
+  <section class="daily-panel glass"><div class="panel-top"><div><div class="eyebrow">A LITTLE SOMETHING FOR TODAY</div><h2>Daily challenge</h2></div><span class="panel-icon">✧</span></div><h3>Campus Explorer</h3><p>Visit a campus location and leave your mark on the map.</p><div class="daily-reward"><span>+150 XP</span><span>+30 ◈</span></div><a class="button button-primary button-small" href="{{ url_for('quests_page') }}">Continue <span>→</span></a></section>
+  <section class="quiz-panel glass"><div class="panel-top"><div><div class="eyebrow">A QUICK BRAIN-SPARK</div><h2>Tech challenge</h2></div><span class="panel-icon">⌘</span></div><p>Which language is primarily used for styling web pages?</p><div class="quiz-options">{% for answer in ['HTML', 'CSS', 'Python', 'SQL'] %}<button class="quiz-option" data-quiz-answer="{{ answer }}">{{ answer }}</button>{% endfor %}</div><div class="quiz-feedback" id="quiz-feedback" aria-live="polite"></div></section>
+</div>
+<div class="dashboard-lower">
+  <section class="compact-panel glass"><div class="panel-top"><div><div class="eyebrow">YOUR PEOPLE, YOUR POWER</div><h2>Squad mode</h2></div><span class="panel-icon">⌘</span></div><p>Good quests are better together. Start a squad or find your crew.</p><a class="text-link" href="{{ url_for('content_page', page='squad') }}">Meet your squad ↗</a></section>
+  <section class="compact-panel glass"><div class="panel-top"><div><div class="eyebrow">HAPPENING AROUND CAMPUS</div><h2>Coming up</h2></div><span class="panel-icon">✧</span></div>{% for activity in activities %}<a class="event-row" href="{{ url_for('content_page', page='activities') }}"><span class="event-date">{{ activity.date[8:10] }}</span><span><b>{{ activity.title }}</b><small>{{ activity.organization }} · {{ activity.location }}</small></span><span class="gold-text">+{{ activity.xp }}</span></a>{% endfor %}<a class="text-link" href="{{ url_for('content_page', page='activities') }}">Explore activities ↗</a></section>
+</div>
+{% endblock %}

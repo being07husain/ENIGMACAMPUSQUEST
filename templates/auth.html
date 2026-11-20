@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="auth-layout" style="--auth-background: url('{{ url_for('asset_file', filename='campus_desktop_bg.jpg') }}')">
+  <div class="auth-story">
+    <a class="brand auth-brand" href="{{ url_for('login_page') }}"><span class="brand-mark">✦</span><span>CAMPUS<span class="brand-quest">QUEST</span><small>YOUR CAMPUS, YOUR QUEST</small></span></a>
+    <div class="auth-story-copy">
+      <div class="eyebrow"><span class="live-pip"></span> YOUR NEXT CHAPTER STARTS HERE</div>
+      <h1>Every corner<br>holds a <em>story.</em></h1>
+      <p>Explore your campus, find your people, and turn the everyday into an adventure.</p>
+      <div class="auth-orbit"><span>✧</span><i></i><b>01</b><small>THE LOST CODE</small></div>
+    </div>
+    <div class="auth-footnote">✦ &nbsp;A universe of campus-sized adventures.</div>
+  </div>
+  <div class="auth-form-side">
+    <div class="auth-card glass">
+      <div class="eyebrow">PLAYER GATEWAY</div>
+      <h2>{{ 'Welcome back, explorer' if mode == 'login' else 'Create your player' }}</h2>
+      <p class="muted">{{ 'Your campus story is waiting right where you left it.' if mode == 'login' else 'Make your mark. Your next campus quest awaits.' }}</p>
+      <form method="post" class="form-stack">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        {% if mode == 'signup' %}
+        <label>Full name<input name="full_name" autocomplete="name" placeholder="e.g. Aarav Mehta" required value="{{ request.form.get('full_name', '') }}"></label>
+        <div class="form-row"><label>Username<input name="username" autocomplete="username" placeholder="starlight" required value="{{ request.form.get('username', '') }}"></label><label>Roll number<input name="roll_number" placeholder="CQ2026001" required value="{{ request.form.get('roll_number', '') }}"></label></div>
+        {% endif %}
+        <label>College email<input type="email" name="email" autocomplete="email" placeholder="you@college.edu" required value="{{ request.form.get('email', '') }}"></label>
+        {% if mode == 'signup' %}
+        <label>Department<input name="department" placeholder="Computer Science" required value="{{ request.form.get('department', '') }}"></label>
+        <div class="form-row"><label>Year<select name="year" required><option value="">Year</option>{% for y in range(1, 6) %}<option value="{{ y }}" {% if request.form.get('year') == y|string %}selected{% endif %}>Year {{ y }}</option>{% endfor %}</select></label><label>Semester<select name="semester" required><option value="">Semester</option>{% for s in range(1, 11) %}<option value="{{ s }}" {% if request.form.get('semester') == s|string %}selected{% endif %}>Semester {{ s }}</option>{% endfor %}</select></label></div>
+        {% endif %}
+        <label>Password<input type="password" name="password" autocomplete="{{ 'new-password' if mode == 'signup' else 'current-password' }}" placeholder="{{ 'At least 8 characters' if mode == 'signup' else 'Your password' }}" required minlength="{{ 8 if mode == 'signup' else 1 }}"></label>
+        {% if mode == 'signup' %}<label>Confirm password<input type="password" name="confirm_password" autocomplete="new-password" placeholder="Re-enter password" required minlength="8"></label>{% endif %}
+        <button class="button button-primary button-wide" type="submit">{{ 'ENTER CAMPUSQUEST' if mode == 'login' else 'CREATE PLAYER' }} <span>↗</span></button>
+      </form>
+      <div class="auth-switch">{% if mode == 'login' %}New to CampusQuest? <a href="{{ url_for('signup_page') }}">Create your account</a>{% else %}Already have a player? <a href="{{ url_for('login_page') }}">Sign in</a>{% endif %}</div>
+      {% if mode == 'login' %}<div class="demo-hint">Sample accounts are listed in the README after database seeding.</div>{% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

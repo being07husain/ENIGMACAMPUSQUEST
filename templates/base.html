@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#100d25">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>{{ page_title or 'CampusQuest' }} · CampusQuest</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=7) }}">
+</head>
+<body data-page="{{ page or '' }}">
+  <div class="sky" aria-hidden="true"><div class="stars"></div><i class="shooting-star shooting-star-one"></i><i class="shooting-star shooting-star-two"></i><div class="nebula nebula-one"></div><div class="nebula nebula-two"></div><div class="nebula nebula-garden"></div></div>
+  {% if current_user %}
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('home') }}" aria-label="CampusQuest home">
+      <span class="brand-mark">✦</span><span>CAMPUS<span class="brand-quest">QUEST</span><small>YOUR CAMPUS, YOUR QUEST</small></span>
+    </a>
+    <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false">☰</button>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="{{ url_for('home') }}" class="{{ 'active' if request.path == '/' else '' }}">Home</a>
+      <a href="{{ url_for('content_page', page='map') }}" class="{{ 'active' if request.path == '/map' else '' }}">Campus Map</a>
+      <a href="{{ url_for('quests_page') }}" class="{{ 'active' if request.path.startswith('/quests') else '' }}">Quests</a>
+      <a href="{{ url_for('content_page', page='leaderboard') }}">Leaderboard</a>
+      <a href="{{ url_for('content_page', page='games') }}">Games</a>
+      <a href="{{ url_for('content_page', page='squad') }}">Squad</a>
+      <a href="{{ url_for('content_page', page='activities') }}">Activities</a>
+    </nav>
+    <div class="top-actions">
+      <div class="notification-wrap">
+        <button class="icon-button" id="notification-toggle" aria-label="Notifications"><span class="bell-icon" aria-hidden="true"></span>{% if unread_count %}<i class="notification-dot"></i>{% endif %}</button>
+        <div class="notification-menu" id="notification-menu" hidden>
+          <div class="notification-heading"><strong>Notifications</strong><button class="text-button" id="read-all">Mark all read</button></div>
+          <div id="notification-list"><p class="muted">Loading your updates…</p></div>
+        </div>
+      </div>
+      <a class="coin-pill" href="{{ url_for('content_page', page='rewards') }}"><span>◈</span> {{ player_stats.get('coins', 0) }}</a>
+      <a class="player-chip" href="{{ url_for('content_page', page='profile') }}">
+        <span class="avatar avatar-small">{{ current_user.full_name[:1]|upper }}</span>
+        <span class="player-chip-copy"><b>LVL {{ player_stats.get('level', 1) }}</b><small>{{ current_user.username }}</small></span>
+      </a>
+      {% if current_user.role == 'admin' %}<a class="icon-button admin-link" href="{{ url_for('admin_dashboard') }}" title="Admin">⚙</a>{% endif %}
+      <form action="{{ url_for('logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="icon-button logout-button" aria-label="Log out" title="Log out">↗</button></form>
+    </div>
+  </header>
+  {% endif %}
+  <main class="{% if current_user %}app-main{% else %}auth-main{% endif %}">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}<div class="flash-stack">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+  {% if page == 'map' %}
+  <script src="{{ url_for('static', filename='vendor/three.min.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='vendor/OrbitControls.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/campus-world.js') }}" defer></script>
+  {% endif %}
+  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

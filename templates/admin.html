@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% set page = 'admin' %}
+{% block content %}
+<section class="page-intro"><div><div class="eyebrow">CAMPUSQUEST / ADMINISTRATION</div><h1>Campus control room</h1><p>Manage your campus content and keep the adventure moving.</p></div><div class="admin-tag">ADMIN ACCESS</div></section>
+<section class="admin-stats">{% for key, value in totals.items() %}<div class="glass stat-card"><small>{{ key|replace('_', ' ')|upper }}</small><b>{{ value }}</b></div>{% endfor %}</section>
+<section class="glass page-panel admin-panel"><div class="panel-top"><div><div class="eyebrow">CONTENT MANAGEMENT</div><h2>Campus content</h2></div></div><div class="admin-tabs" id="admin-tabs">{% for entity in ['quests','activities','locations','achievements','rewards','games','users'] %}<button class="filter-chip {% if loop.first %}selected{% endif %}" data-entity="{{ entity }}">{{ entity|title }}</button>{% endfor %}</div><form id="admin-create-form" class="admin-form"><div id="admin-fields"></div><button class="button button-primary" type="submit">Create record <span>＋</span></button></form><p class="muted admin-help">Records created here are persisted in MongoDB and displayed in their player-facing sections. Deletion archives content instead of removing player history.</p></section>
+{% endblock %}
